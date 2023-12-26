@@ -63,4 +63,4 @@ if __name__=='__main__':
         norm_scores_total = norm_scores_df_all.loc['total']
         norm_scores_by_length.append(norm_scores_total)
 
-    plot_norm_scores_by_length(norm_scores_by_length, 'err_types_by_length.pdf')
+    plot_norm_scores_by_length(norm_scores_by_length, 'plots/err_types_by_length.pdf')
