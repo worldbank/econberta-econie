@@ -1,4 +1,4 @@
-VERSION = '3.1'
+VERSION = '2.3'
 SLICE = '1.0'
 MODEL_FOLDER = '../models/'
 N_ITER = 30
@@ -7,7 +7,7 @@ EPOCHS=10
 gradient_accumulation_steps=4
 dropout=0.2
 
-for model_name in bert roberta deberta scratch pretrained
+for model_name in bert roberta mdeberta scratch pretrained
 do
     allennlp tune \
     allennlp/optuna_ner.jsonnet \
