@@ -1,0 +1,39 @@
+[
+  {
+    "type": "categorical",
+    "attributes": {
+      "name": "transformer_model",
+      "choices": [
+        "roberta-base"
+      ]
+    }
+  },
+  {
+    "type": "categorical",
+    "attributes": {
+      "name": "lr",
+      "choices": [6e-5]
+    }
+  },
+  {
+    "type": "categorical",
+    "attributes": {
+      "name": "lr_ner",
+      "choices": [7.5e-3]
+    }
+  },
+  {
+    "type": "categorical",
+    "attributes": {
+      "name": "seed",
+      "choices": [10, 20, 42]
+    }
+  },
+  {
+    "type": "categorical",
+    "attributes": {
+      "name": "fold",
+      "choices": [0, 1, 2, 3, 4]
+    }
+  }
+]
