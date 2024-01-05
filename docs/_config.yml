@@ -1,0 +1,37 @@
+# Book settings
+title:
+author: Development Impact (DIME)
+logo: docs/images/logo.png
+only_build_toc_files: true
+
+repository:
+  url: https://github.com/worldbank/econberta-econie
+  branch: main
+
+#######################################################################################
+# HTML-specific settings
+html:
+  home_page_in_navbar: false
+  extra_navbar: ""
+  use_edit_page_button: true
+  use_repository_button: true
+  use_issues_button: true
+  baseurl: https://worldbank.github.io/econberta-econie
+  favicon: docs/images/favicon.ico
+
+#######################################################################################
+# Execution settings
+execute:
+  execute_notebooks: "off"
+
+#######################################################################################
+# Bibliography settings
+bibtex_bibfiles:
+  - docs/bibliography.bib
+
+#######################################################################################
+# Sphinx settings
+sphinx:
+  config:
+    html_show_copyright: false
+    html_last_updated_fmt: "%b %d, %Y"
