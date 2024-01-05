@@ -2,7 +2,7 @@
 
 This repository contains the code for the paper [EconBERTa: Towards Robust Extraction of Named Entities in Economics](https://aclanthology.org/2023.findings-emnlp.774/) by Karim Lasri, Pedro Vitor Quinta de Castro, Mona Schirmer, Luis Eduardo San Martin, Linxi Wang, Tomáš Dulka, Haaya Naushan, John Pougué-Biyong, Arianna Legovini, and Samuel Fraiberger published at EMNLP Findings 2023.
 <p align="center">
-  <img width="600" src="methodology.pdf">
+  <img width="600" src="methodology.png">
 </p>
 
 ## Overview
@@ -19,7 +19,7 @@ It also provides scripts to reproduce the results in the paper, notably for
 
 
 ## Prerequisites
-The code uses Python3. To set up an environment with the required packages, run
+To set up an environment with the required packages, run
 ```
 conda create -n econberta python=3.9.7
 conda activate econberta
@@ -37,6 +37,7 @@ We release EconBERTa on huffingface's transformers [here](https://huggingface.co
 ECON-IE consists of 1,000 abstracts from economics research papers, totalling more than 7, 000 sentences. The abstracts summarize impact evaluation (IE) studies, aiming to measure the causal effects of interventions on outcomes by using suitable statistical methods for causal inference. The dataset is sampled from 10, 000 studies curated by [3ie](https://www.3ieimpact.org/), published between 1990 and 2022, and covering all 11 sectors defined by the [World Bank Sector Taxonomy](https://thedocs.worldbank.org/en/doc/538321490128452070-0290022017/New-Sector-Taxonomy-and-definitions).
 
 
+---
 
 If you find this repository useful in your research, please cite the following paper:
 
