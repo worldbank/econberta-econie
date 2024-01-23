@@ -1,7 +1,9 @@
-VERSION = '2.3'
-SLICE = '1.0'
-MODEL_FOLDER = '../models/'
-N_ITER = 30
+#!/usr/bin/env bash
+
+VERSION='2.3'
+SLICE='1.0'
+MODEL_FOLDER='../models/'
+N_ITER=30
 BATCH_SIZE=16
 EPOCHS=10
 gradient_accumulation_steps=4
