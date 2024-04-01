@@ -63,7 +63,7 @@
 
 # Python
 !/**/*.py
-!/**/*.ipynb
+/**/*.ipynb
 !/**/requirements.txt
 !/**/Pipfile
 !/**/Pipfile.lock
