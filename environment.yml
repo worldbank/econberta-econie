@@ -1,0 +1,16 @@
+name: econberta
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9.7
+  - typing_extensions=4.5.0
+  - allennlp-optuna=0.1.7
+  - transformers=4.20.1
+  - matplotlib=3.6.2
+  - pip
+  - pip:
+    - allennlp-models==2.10.1
+    - pre-commit
+    - black
+    - ruff
