@@ -5,12 +5,11 @@ export SLICE='1.0'
 MODEL_FOLDER='../models/'
 export N_ITER=30
 export BATCH_SIZE=16
-export EPOCHS=2
+export EPOCHS=10
 export GRADIENT_ACCUMULATION_STEPS=4
 export DROPOUT=0.2
 
-#for model_name in bert roberta mdeberta #scratch pretrained
-for model_name in mdeberta pretrained; do
+for model_name in bert roberta mdeberta scratch pretrained; do
 
     if allennlp tune \
     allennlp/optuna_ner.jsonnet \

@@ -129,5 +129,6 @@ tokens/
 /finetuning/confusion_matrices/*
 /finetuning/predictions/*
 /finetuning/scores/*
+/finetuning/__pycache__
 /models/*
 .idea
