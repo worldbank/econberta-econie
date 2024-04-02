@@ -11,7 +11,7 @@ The repository contains
 - `ECON-IE` final annotation after aggregation and curation phase
 It also provides scripts to reproduce the results in the paper, notably for
 - finetuning `EconBERTa` on `ECON-IE`: paper section 3.2 and 4, see folder `finetuning`
-- evaluationg generalization performance: paper section 4, see folder `analyses`
+- evaluation generalization performance: paper section 4, see folder `analyses`
 
 
 ## Prerequisites

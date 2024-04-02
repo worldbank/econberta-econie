@@ -1,0 +1,6 @@
+/finetuning/allennlp_optuna.db
+/finetuning/confusion_matrices/*
+/finetuning/predictions/*
+/finetuning/scores/*
+/models/*
+.idea

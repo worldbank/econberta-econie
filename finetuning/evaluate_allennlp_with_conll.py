@@ -49,17 +49,17 @@ def predict_batch(batch, predictor, count, out_file, raise_oom):
             torch.cuda.empty_cache()
             for sub_batch in lazy_groups_of(iter(batch), new_batch_size):
                 if new_batch_size == 1:
-                    # Chegou no tamanho mínimo do batch, se não der certo desiste
+                    # Last attempt with the minimum batch size
                     predict_batch(sub_batch, predictor, count, out_file, raise_oom=True)
                 else:
-                    # Tenta novamente até que o tamanho do batch seja suficiente
+                    # Try again with a lower batch size
                     predict_batch(sub_batch, predictor, count, out_file, raise_oom=False)
         else:
             raise e
 
 
-def evaluate(model_path: str, version: str, fold: int = None, cuda_device: int = -1, batch_size: int = 64,
-             discriminator: str = None, seed: int = None):
+def evaluate(model_path: str, version: str, dataset_folder: str, fold: int = None, cuda_device: int = -1,
+             batch_size: int = 16, seed: int = None):
     if not model_path.startswith('https'):
         model_path = Path(model_path)
 
@@ -74,17 +74,15 @@ def evaluate(model_path: str, version: str, fold: int = None, cuda_device: int =
     count = {'count': 0}
 
     if fold is not None:
-        document_folder = get_or_create_path(f'dataset/version_{version}/entities/fold-{fold}')
+        document_folder = Path(dataset_folder) / f'fold-{fold}'
         predictions_folder = get_or_create_path(f'predictions/version_{version}/fold-{fold}')
         scores_folder = get_or_create_path(f'scores/version_{version}/fold-{fold}')
         confusion_matrix_folder = get_or_create_path(f'confusion_matrices/version_{version}/fold-{fold}')
     else:
-        document_folder = get_or_create_path(f'dataset/version_{version}/entities')
+        document_folder = Path(dataset_folder)
         predictions_folder = get_or_create_path(f'predictions/version_{version}')
         scores_folder = get_or_create_path(f'scores/version_{version}')
         confusion_matrix_folder = get_or_create_path(f'confusion_matrices/version_{version}')
-
-    discriminator_suffix = f'_{discriminator}' if discriminator else ''
 
     if seed:
         predictions_folder = get_or_create_path(predictions_folder / f'seed-{seed}')
@@ -93,9 +91,9 @@ def evaluate(model_path: str, version: str, fold: int = None, cuda_device: int =
 
     for dataset_type in ['dev', 'test']:
 
-        document_path = document_folder / f'{dataset_type}{discriminator_suffix}.conll'
-        predictions_path = predictions_folder / f'predictions_allennlp_{dataset_type}{discriminator_suffix}.txt'
-        scores_path = scores_folder / f'scores_allennlp_{dataset_type}{discriminator_suffix}.txt'
+        document_path = document_folder / f'{dataset_type}.conll'
+        predictions_path = predictions_folder / f'predictions_allennlp_{dataset_type}.txt'
+        scores_path = scores_folder / f'scores_allennlp_{dataset_type}.txt'
 
         with predictions_path.open(mode='w', encoding='utf8') as out_file:
             for batch in lazy_groups_of(get_instance_data(predictor, document_path), batch_size):
@@ -105,22 +103,20 @@ def evaluate(model_path: str, version: str, fold: int = None, cuda_device: int =
         os.system("./%s < %s > %s" % ('conlleval.perl', str(predictions_path), str(scores_path)))
         print(scores_path.open(mode='r', encoding='utf8').read())
 
-        for relations_only in [False, True]:
-            converted_predictions_path = convert_allennlp_predictions_to_conll(
-                allennlp_predictions_path=predictions_path,
-                conll_input_path=document_path,
-                fold=fold, version=version,
-                dataset_type=dataset_type,
-                relations_only=relations_only,
-                discriminator=discriminator)
-            converted_scores_path = scores_folder / converted_predictions_path.name.replace('predictions', 'scores')
-            print(
-                f'Calculating score for merged dataset using {"relations only" if relations_only else "full dataset"}')
-            os.system("./%s < %s > %s" % ('conlleval.perl', str(converted_predictions_path),
-                                          str(converted_scores_path)))
-            print(converted_scores_path.open(mode='r', encoding='utf8').read())
-            save_report_from_results(predictions_path=predictions_path, confusion_matrix_folder=confusion_matrix_folder,
-                                     version=version, label=f"{dataset_type}_{relations_only}")
+        converted_predictions_path = convert_allennlp_predictions_to_conll(
+            allennlp_predictions_path=predictions_path,
+            conll_input_path=document_path,
+            fold=fold, version=version,
+            dataset_type=dataset_type)
+        converted_scores_path = scores_folder / converted_predictions_path.name.replace('predictions', 'scores')
+        print('Calculating score for merged dataset using full dataset')
+        os.system("./%s < %s > %s" % ('conlleval.perl', str(converted_predictions_path),
+                                      str(converted_scores_path)))
+        print(converted_scores_path.open(mode='r', encoding='utf8').read())
+        save_report_from_results(predictions_path=predictions_path, confusion_matrix_folder=confusion_matrix_folder,
+                                 version=version, label=f"{dataset_type}")
 
 
-if __name__ == '__main__': fire.Fire(evaluate)
+if __name__ == '__main__':
+
+    fire.Fire(evaluate)

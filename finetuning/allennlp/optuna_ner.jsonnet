@@ -34,10 +34,10 @@ local pt_encoder = {
 
 local encoder = pt_encoder;
 
-local dropout = std.parseJson(std.extVar("dropout"));
+local dropout = std.parseJson(std.extVar("DROPOUT"));
 local learning_rate = std.parseJson(std.extVar("lr"));
 local learning_rate_ner = std.parseJson(std.extVar("lr_ner"));
-local gradient_accumulation_steps = std.parseInt(env_or_default("gradient_accumulation_steps", "4"));
+local gradient_accumulation_steps = std.parseInt(env_or_default("GRADIENT_ACCUMULATION_STEPS", "4"));
 
 local wandb_name = std.extVar("WANDB_NAME");
 
@@ -51,6 +51,10 @@ local callbacks = tuning_callbacks;
 
 local tokenizer_kwargs = {
         "max_len": transformer_dim,
+        "use_auth_token": false
+    };
+
+local tokenizer_kwargs = {
         "use_auth_token": false
     };
 
@@ -74,13 +78,10 @@ local seed = std.parseJson(std.extVar('seed'));
 local fold = std.parseJson(std.extVar('fold'));
 local dataset_reader = conll_reader;
 local version = std.extVar("VERSION");
-local base_path = "dataset/version_" + version + "/entities/fold-" + fold;
+local base_path = "../data/econ_ie/fold-" + fold;
 local train_path = base_path + "/train.conll";
 local dev_path = base_path + "/dev.conll";
 local test_path = base_path + "/test.conll";
-//local train_path = base_path + "/train_sector.conll";
-//local dev_path = base_path + "/dev_sector.conll";
-//local test_path = base_path + "/test_sector.conll";
 local evaluate_on_test = true;
 
 {
@@ -106,9 +107,7 @@ local evaluate_on_test = true;
                     "max_length": transformer_dim,
                     "model_name": transformer_model,
                     "tokenizer_kwargs": tokenizer_kwargs,
-                    "transformer_kwargs": {
-                        "use_auth_token": false
-                    }
+                    "transformer_kwargs": tokenizer_kwargs
                 }
             }
         },
