@@ -1,7 +1,7 @@
 typing_extensions==4.5.0
 allennlp-models==2.10.1
 allennlp-optuna==0.1.7
-transformers==4.29.0
+transformers==4.38.0
 matplotlib==3.6.2
 fire~=0.5.0
 overrides==3.1.0
