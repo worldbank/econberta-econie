@@ -8,10 +8,9 @@ from pathlib import Path
 import optuna
 
 
-def load_best_models(version: str = '1.2c', models_folder: str = '/media/pedro/arquivos/models/world-bank/causal',
-                     dataset_slice: str = '1.0'):
+def load_best_models(models_folder: str = '../models', version: str = '2.3', dataset_slice: str = '1.0'):
     """
-    :param version: dataset version (1.2c)
+    :param version: dataset version
     :param models_folder: Parent folder containing the xval folder per dataset slice (ner_allennlp_cv_1.2c_x.x)
     :param dataset_slice: slice of the dataset [0.2, 0.4, 0.6, 0.8, 1.0]
     """
@@ -19,31 +18,30 @@ def load_best_models(version: str = '1.2c', models_folder: str = '/media/pedro/a
     for study in optuna.get_all_study_summaries(storage="sqlite:///allennlp_optuna.db"):
         if str(version) in study.study_name:
             version_studies.append(study)
-    
+
     version_studies = sorted(version_studies, key=lambda _study: _study.study_name)
 
     grid_search_folder = 'grid_search_ner_allennlp'
     best_models_folder = 'ner_allennlp_best'
-    
+
     for version_study in version_studies:
-        if version_study.study_name[-3:]==str(dataset_slice):
+        if version_study.study_name[-3:] == str(dataset_slice):
             study = optuna.load_study(
                 storage="sqlite:///allennlp_optuna.db",
                 study_name=version_study.study_name
             )
             study_df = study.trials_dataframe().sort_values(by='value', ascending=False)
-        
+
             for fold in range(5):
                 if fold in study_df.params_fold.values:
                     top_fold = study_df[study_df.params_fold == fold].iloc[0].to_dict()
                     models_folder = Path(models_folder)
-                    source_path = models_folder / f'{grid_search_folder}_{version}_{dataset_slice}' / f'trial_{top_fold["number"]}'
-                    target_path = models_folder / f'{best_models_folder}_{version}_{dataset_slice}' / f'fold-{fold}/'
+                    source_path = models_folder / f'{grid_search_folder}_{version}' / f'trial_{top_fold["number"]}'
+                    target_path = models_folder / f'{best_models_folder}_{version}' / f'fold-{fold}/'
 
                     if target_path.exists():
                         shutil.rmtree(f'{str(target_path)}/')
-                    else:
-                        target_path.mkdir(parents=True, exist_ok=True)
+                    target_path.mkdir(parents=True, exist_ok=True)
 
                     for file in source_path.iterdir():
                         if file.is_dir():

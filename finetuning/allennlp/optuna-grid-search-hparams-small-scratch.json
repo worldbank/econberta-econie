@@ -4,7 +4,7 @@
     "attributes": {
       "name": "transformer_model",
       "choices": [
-        "/scratch/spf248/EconBert/best-checkpoints/scratch-065000/"
+        "worldbank/econberta-fs"
       ]
     }
   },
