@@ -252,6 +252,7 @@ tokens/
 !/**/*.yml
 !/**/*.dvc
 !/**/*.yaml
+.DS_Store
 
 /finetuning/allennlp_optuna.db
 /finetuning/confusion_matrices/*
