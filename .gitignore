@@ -252,6 +252,7 @@ tokens/
 !/**/*.yml
 !/**/*.dvc
 !/**/*.yaml
+
 /finetuning/allennlp_optuna.db
 /finetuning/confusion_matrices/*
 /finetuning/predictions/*
@@ -259,3 +260,4 @@ tokens/
 /finetuning/__pycache__
 /models/*
 .idea
+build/*
