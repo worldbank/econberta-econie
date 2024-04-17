@@ -43,7 +43,8 @@ local wandb_name = std.extVar("WANDB_NAME");
 
 local tuning_callbacks = [
     {
-        "type": "optuna_pruner"
+        "type": "tensorboard",
+        "should_log_learning_rate": true
     }
 ];
 

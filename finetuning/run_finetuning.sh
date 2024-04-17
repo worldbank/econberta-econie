@@ -8,6 +8,7 @@ export BATCH_SIZE=16
 export EPOCHS=10
 export GRADIENT_ACCUMULATION_STEPS=4
 export DROPOUT=0.2
+export DATASET_PATH=../data/econ_ie
 
 for model_name in bert roberta mdeberta scratch pretrained; do
 
@@ -26,7 +27,7 @@ for model_name in bert roberta mdeberta scratch pretrained; do
       if python3 load_best_allennlp_ner_models.py --version ${VERSION}_${model_name} --models-folder $MODEL_FOLDER --dataset_slice $SLICE; then
 
         echo "sh evaluate_ner_allennlp_cv.sh ${VERSION}_${model_name} $MODEL_FOLDER ner_allennlp_best"
-        sh evaluate_ner_allennlp_cv.sh ${VERSION}_${model_name} $MODEL_FOLDER ner_allennlp_best
+        sh evaluate_ner_allennlp_cv.sh ${VERSION}_${model_name} $MODEL_FOLDER ner_allennlp_best ${DATASET_PATH}
 
       fi
 

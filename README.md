@@ -19,8 +19,12 @@ To set up an environment with the required packages, run
 ```
 conda create -n econberta python=3.9.7
 conda activate econberta
+pip install allennlp==2.10.1 allennlp-models==2.10.1 allennlp-optuna==0.1.7
 pip install -r requirements.txt
 ```
+
+AllenNLP should be installed first because it has a conflict with later transformer versions, in terms of dependencies. 
+
 ## Domain-adpated EconBERTa model
 EconBERTa is a DeBERTa-based language model adapted to the domain of economics. It has been pretrained following the [ELECTRA](https://arxiv.org/abs/2003.10555) approach, using a large corpus consisting of 9,4B tokens from 1,5M economics papers (around 800,000 full articles and 700,000 abstracts). 
 We release EconBERTa on huffingface's transformers [here](https://huggingface.co/worldbank/econberta).

@@ -3,5 +3,10 @@
 /finetuning/predictions/*
 /finetuning/scores/*
 /finetuning/__pycache__
+/finetuning/run_best_finetuning.sh
+/finetuning/run_questions_finetuning.sh
+/finetuning/run_best_question_finetuning.sh
 /models/*
 .idea
+/finetuning/run_best_question_finetuning_intervention.sh
+/finetuning/run_best_question_finetuning_outcome.sh
