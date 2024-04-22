@@ -5,6 +5,8 @@ from os.path import join
 from tenacity import retry, wait_exponential
 from tqdm import tqdm
 import logging
+import ast
+import re
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -223,7 +225,16 @@ def process_sentences(
 
 
 def log_prompts(INSTRUCTION_PROMPT, EXAMPLES_TEMPLATE, EXAMPLES, INFERENCE_PROMPT):
+    """
+    This function logs the instruction prompt, examples template, and inference prompt for debugging purposes.
+    It first logs the instruction prompt, then if an examples template is provided, it renders the template with the second example and logs the result.
+    Finally, it renders the inference prompt with the second example and logs the result.
 
+    :param INSTRUCTION_PROMPT: The instruction prompt to be logged.
+    :param EXAMPLES_TEMPLATE: The examples template to be rendered and logged.
+    :param EXAMPLES: The examples to be used for rendering the templates.
+    :param INFERENCE_PROMPT: The inference prompt to be rendered and logged.
+    """
     logging.info("INSTRUCTION")
     logging.info(INSTRUCTION_PROMPT)
     logging.info("-------")
@@ -232,3 +243,116 @@ def log_prompts(INSTRUCTION_PROMPT, EXAMPLES_TEMPLATE, EXAMPLES, INFERENCE_PROMP
         logging.info(EXAMPLES_TEMPLATE.render(EXAMPLES[1]))
         logging.info("-------")
     logging.info(INFERENCE_PROMPT.render(EXAMPLES[1]))
+
+
+def update_entities(value, category, tokens, tokenizer, entities={}):
+    """
+    This function updates a dictionary of entities with the entity annotations for a specific category.
+    For each sequence in the provided value, it tokenizes the sequence and finds its position in the list of tokens.
+    It then updates the entities dictionary with the appropriate 'B-' and 'I-' tags for the sequence.
+
+    :param value: The sequences to be tokenized and annotated.
+    :param category: The category of the entities.
+    :param tokens: The list of tokens.
+    :param tokenizer: The tokenizer to be used.
+    :param entities: The dictionary of entities to be updated (default is an empty dictionary).
+    :return: The updated entities dictionary.
+    """
+    for sequence in value:
+        sequence = tokenizer.tokenize(sequence)
+
+        # Find the position of the sequence in the list
+        for i in range(len(tokens)):
+            if tokens[i : i + len(sequence)] == sequence:
+                break
+
+        entities.update({i: f"B-{category}"})
+        entities.update({i + k: f"I-{category}" for k in range(1, len(sequence))})
+
+    return entities
+
+
+def convert_df_to_token_level(test_dict, tokenizer, categories):
+    """
+    This function converts a dictionary of sentences and entity annotations into token-level IOB (Inside, Outside, Beginning) format.
+    For each sentence in the dictionary, it tokenizes the sentence and initializes an empty dictionary for the entities.
+    For each category in the provided categories, it updates the entities dictionary with the entity annotations for that category.
+    Finally, it creates a list of IOB tokens for each sentence by pairing each token with its corresponding entity tag (or 'O' if no tag is found).
+
+    :param test_dict: The dictionary of sentences and entity annotations.
+    :param tokenizer: The tokenizer to be used.
+    :param categories: The categories to be processed.
+    :return: The updated dictionary with the added IOB tokens.
+    """
+    for key, value in test_dict.items():
+        entities = {}
+        tokens = tokenizer.tokenize(value["sentence"])
+        for category in categories:
+            entities = update_entities(
+                ast.literal_eval(value[category]),
+                category,
+                tokens,
+                tokenizer,
+                entities=entities,
+            )
+
+        test_dict[key]["IoB"] = [
+            [token, entities.get(i, "O")] for i, token in enumerate(tokens)
+        ]
+
+    return test_dict
+
+
+def pre_proc_llm_output(_pred):
+    """
+    This function processes the output of the LLM model. It performs several string manipulations to ensure the output is in the correct format.
+    If the output is a string, it performs the following operations:
+    - Replaces " ''" with " '"
+    - If the output is an empty string or 'N/A', it replaces it with '[]'
+    - If the output matches the regex '^[-\%\w+\s]+$', it wraps the output in a list
+    - It escapes single quotes that are part of words
+    - It escapes single quotes that are surrounded by spaces
+    - It escapes single quotes that are followed by a space and preceded by a letter
+    - Finally, it converts the string to a Python object using ast.literal_eval
+    :param _pred: The output of the LLM model
+    :return: The processed output
+    """
+    if isinstance(_pred, str):
+        if " ''" in _pred:
+            _pred = _pred.replace(" ''", " '")
+        if _pred in ["", "N/A"]:
+            _pred = "[]"
+        if re.match("^[-\%\w+\s]+$", _pred):
+            _pred = f"['{_pred}']"
+        _pred = re.sub(r"([a-z])'([a-z])", r"\1\\'\2", _pred)
+        _pred = re.sub(r"(\s)'(\s)", r"\1\\'\2", _pred)
+        _pred = re.sub(r"([a-z])'(\s)", r"\1\\'\2", _pred)
+        _pred = ast.literal_eval(_pred)
+
+    return _pred
+
+
+def convert_response_from_llm(text, response, tokenizer, categories):
+    """
+    This function converts the response from the LLM model into IOB (Inside, Outside, Beginning) format.
+    It tokenizes the input text and initializes an empty dictionary for the entities.
+    For each category in the provided categories, it processes the corresponding response from the LLM model and updates the entities dictionary.
+    Finally, it creates a list of IOB tokens by pairing each token with its corresponding entity tag (or 'O' if no tag is found).
+
+    :param text: The input text to be tokenized.
+    :param response: The response from the LLM model.
+    :param tokenizer: The tokenizer to be used.
+    :param categories: The categories to be processed.
+    :return: A list of IOB tokens.
+    """
+    tokens = tokenizer.tokenize(text)
+    entities = {}
+    for category in categories:
+        _pred = response.get(category.capitalize(), [])
+        _pred = pre_proc_llm_output(_pred)
+
+        entities = update_entities(_pred, category, tokens, tokenizer, entities)
+
+    iob_tokens = [[token, entities.get(i, "O")] for i, token in enumerate(tokens)]
+
+    return iob_tokens
