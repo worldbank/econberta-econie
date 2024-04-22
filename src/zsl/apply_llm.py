@@ -18,6 +18,20 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(args):
+    """
+    This function is the main entry point for the script. It performs the following steps:
+    - Initializes the OpenAI client with the API key.
+    - Loads the examples from the annotation file.
+    - Loads the instruction prompt, examples template, and inference prompt.
+    - If verbose mode is enabled, logs the prompts.
+    - Loads the data for inference.
+    - Initializes the responses and tokens info.
+    - If the output file exists, loads the existing responses.
+    - Processes the sentences, generating responses and updating the tokens info.
+    - Writes the responses to the output file.
+
+    :param args: The command line arguments. Expected to contain the paths to the data, prompts, and output, as well as the model name and verbosity flag.
+    """
 
     client = openai.Client(api_key=os.getenv("OPENAI_API_KEY"))
     fsl = pd.read_csv(join(args.path_data, f"{args.example_csv_name}.csv"))
