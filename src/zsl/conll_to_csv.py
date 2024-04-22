@@ -6,6 +6,14 @@ logging.basicConfig(level=logging.INFO)
 
 
 def main(path_data, args):
+    """
+    This function is the main entry point for the script. It performs the following steps:
+    - Loads the sentences from the CoNLL-formatted data file.
+    - Converts the sentences to CSV format and saves them to a new file.
+
+    :param path_data: The path to the directory containing the data file.
+    :param args: The command line arguments. Expected to contain the names of the CoNLL and CSV files.
+    """
     logging.info("Loading the data")
     sentences = load_sentences(path_data, args.name_conll)
     logging.info("Converting to csv")
