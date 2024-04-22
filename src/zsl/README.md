@@ -70,3 +70,23 @@ If you'd like to compute the metrics from the new generated `jsonl` file from op
 ```bash
 python src/zsl/metrics.py --path_data_test data/econ_ie/test.csv --path_data_preds data/processed/20240417_FSL_LLM_responses.jsonl --path_settings src/zsl/settings_metrics.json
 ```
+
+### Metrics
+
+Here are the metrics for the FSL with 1 example compared with EconBERTa:
+
+| Category       | Precision | Recall  | F1-score | Support |
+|----------------|-----------|---------|----------|---------|
+| B-coreference  | 0.14908   | 0.08391 | 0.10738  | 2610    |
+| I-coreference  | 0.00496   | 0.03590 | 0.00872  | 195     |
+| B-intervention | 0.50771   | 0.62559 | 0.56052  | 6370    |
+| I-intervention | 0.50769   | 0.68445 | 0.58297  | 16923   |
+| B-outcome      | 0.34899   | 0.39495 | 0.37055  | 8277    |
+| I-outcome      | 0.41163   | 0.69027 | 0.51572  | 18487   |
+| B-population   | 0.36801   | 0.51353 | 0.42876  | 4767    |
+| I-population   | 0.34476   | 0.69137 | 0.46010  | 7663    |
+| B-effect_size  | 0.51269   | 0.76428 | 0.61370  | 1506    |
+| I-effect_size  | 0.59010   | 0.80679 | 0.68164  | 4891    |
+| **accuracy**       |           |         | 0.70470  | 247261  |
+| **macro avg**      | 0.42324   | 0.54810 | 0.46773  | 247261  |
+| **EconBERTa**      |           |         | 0.687  |           |
