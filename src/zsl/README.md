@@ -88,5 +88,5 @@ Here are the metrics for the FSL with 1 example compared with EconBERTa:
 | B-effect_size  | 0.51269   | 0.76428 | 0.61370  | 1506    |
 | I-effect_size  | 0.59010   | 0.80679 | 0.68164  | 4891    |
 | **accuracy**       |           |         | 0.70470  | 247261  |
-| **macro avg**      | 0.42324   | 0.54810 | 0.46773  | 247261  |
+| **Weighted Avg**   |    0.77057|  0.70470| 0.72491  |  247261 |
 | **EconBERTa**      |           |         | 0.687  |           |
