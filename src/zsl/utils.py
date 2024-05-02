@@ -97,14 +97,20 @@ def aggregate_lines(df):
     # Sort the DataFrame by page number, column number, and x1 value
     df = df.sort_values(["#page", "column", "x1"])
 
+    # Set y1, y2 as integers
+    df["y1_int"] = df["y1"].astype(int)
+    df["y2_int"] = df["y2"].astype(int)
+
     # Group lines by filename, page number, column number, y1, and y2
     # Aggregate x1, x2, text, width, and height values for each group
     df = (
-        df.groupby(["filename", "#page", "column", "y1", "y2"], as_index=False)
+        df.groupby(["filename", "#page", "column", "y1_int", "y2_int"], as_index=False)
         .agg(
             {
                 "x1": "min",
                 "x2": "max",
+                "y1": "min",
+                "y2": "max",
                 "text": " ".join,
                 "width": "first",
                 "height": "first",
@@ -115,8 +121,8 @@ def aggregate_lines(df):
     )
 
     df.loc[:, "group"] = (
-        (df.loc[:, "y1"] < df.loc[:, "y1"].shift())
-        | (df.loc[:, "y2"] > df.loc[:, "y2"].shift())
+        (df.loc[:, "y1"] <= df.loc[:, "y1"].shift())
+        | (df.loc[:, "y2"] >= df.loc[:, "y2"].shift())
     ).cumsum()
 
     df = (
@@ -173,14 +179,15 @@ def get_num_columns(df, n_bins=100):
     _peaks_1 = [hist_1[1][i] for i in np.where(hist_1[0] > q975_x1)[0]]
     _peaks_2 = [hist_2[1][i] for i in np.where(hist_2[0] > q975_x2)[0]]
 
-    # Combine peaks that are closer than 40 pixels
+    # Combine peaks that are closer than half the median of diff between x2 and x1
+    threshold = np.median(x2 - x1) / 2
     peaks_1 = _peaks_1[:1]
     peaks_2 = _peaks_2[:1]
     for peak_1 in _peaks_1[1:]:
-        if peak_1 - peaks_1[-1] > 40:
+        if peak_1 - peaks_1[-1] > threshold:
             peaks_1.append(peak_1)
     for peak_2 in _peaks_2[1:]:
-        if peak_2 - peaks_2[-1] > 40:
+        if peak_2 - peaks_2[-1] > threshold:
             peaks_2.append(peak_2)
 
     # Determine the number of columns
